@@ -18,7 +18,7 @@ func getGuestForArchType(caps libvirtxml.Caps, arch string, virttype string) (li
 			return guest, nil
 		}
 	}
-	return libvirtxml.CapsGuest{}, fmt.Errorf("[DEBUG] Could not find any guests for architecure type %s/%s", virttype, arch)
+	return libvirtxml.CapsGuest{}, fmt.Errorf("[DEBUG] Could not find any guests for architecture type %s/%s", virttype, arch)
 }
 
 func lookupMachine(machines []libvirtxml.CapsGuestMachine, targetmachine string) string {

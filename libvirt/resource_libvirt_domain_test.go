@@ -2,11 +2,6 @@ package libvirt
 
 import (
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
-	libvirt "github.com/libvirt/libvirt-go"
-	libvirtxml "github.com/libvirt/libvirt-go-xml"
 	"io/ioutil"
 	"log"
 	"net/url"
@@ -15,6 +10,12 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	libvirt "github.com/libvirt/libvirt-go"
+	libvirtxml "github.com/libvirt/libvirt-go-xml"
 )
 
 func TestAccLibvirtDomain_Basic(t *testing.T) {
@@ -362,7 +363,7 @@ func TestAccLibvirtDomain_BlockDevice(t *testing.T) {
 
 	resource "libvirt_domain" "%s" {
 		name = "%s"
-		
+
 		disk {
 			block_device = "%s"
 		}
@@ -1092,7 +1093,7 @@ func testAccCheckLibvirtURLDisk(u *url.URL, domain *libvirt.Domain) resource.Tes
 
 		domainDef, err := getXMLDomainDefFromLibvirt(domain)
 		if err != nil {
-			return fmt.Errorf("Error getting libvirt XML defintion from existing libvirt domain: %s", err)
+			return fmt.Errorf("Error getting libvirt XML definition from existing libvirt domain: %s", err)
 		}
 
 		disks := domainDef.Devices.Disks
@@ -1122,7 +1123,7 @@ func testAccCheckLibvirtMultiISODisks(domain *libvirt.Domain) resource.TestCheck
 
 		domainDef, err := getXMLDomainDefFromLibvirt(domain)
 		if err != nil {
-			return fmt.Errorf("Error getting libvirt XML defintion from existing libvirt domain: %s", err)
+			return fmt.Errorf("Error getting libvirt XML definition from existing libvirt domain: %s", err)
 		}
 
 		disks := domainDef.Devices.Disks
@@ -1665,7 +1666,7 @@ EOF
 					testAccCheckLibvirtDomainExists("libvirt_domain."+randomDomainName, &domain),
 					testAccCheckLibvirtDomainDescription(&domain, func(domainDef libvirtxml.Domain) error {
 						if domainDef.Devices.Interfaces[0].Model.Type != "e1000" {
-							return fmt.Errorf("Expecting XSLT to tranform network model to e1000")
+							return fmt.Errorf("Expecting XSLT to transform network model to e1000")
 						}
 						return nil
 					}),
@@ -1739,7 +1740,7 @@ EOF
 }
 
 // changed whitespace in the xslt should create an empty plan
-// as the supress diff function should take care of seeing they are equivalent
+// as the suppress diff function should take care of seeing they are equivalent
 func TestAccLibvirtDomain_XSLT_Whitespace(t *testing.T) {
 	skipIfPrivilegedDisabled(t)
 
@@ -1818,7 +1819,7 @@ EOF
 					testAccCheckLibvirtDomainExists("libvirt_domain."+randomDomainName, &domain),
 					testAccCheckLibvirtDomainDescription(&domain, func(domainDef libvirtxml.Domain) error {
 						if domainDef.Devices.Interfaces[0].Model.Type != "e1000" {
-							return fmt.Errorf("Expecting XSLT to tranform network model to e1000")
+							return fmt.Errorf("Expecting XSLT to transform network model to e1000")
 						}
 						return nil
 					}),
@@ -1831,7 +1832,7 @@ EOF
 					testAccCheckLibvirtDomainExists("libvirt_domain."+randomDomainName, &domain),
 					testAccCheckLibvirtDomainDescription(&domain, func(domainDef libvirtxml.Domain) error {
 						if domainDef.Devices.Interfaces[0].Model.Type != "e1000" {
-							return fmt.Errorf("Expecting XSLT to tranform network model to e1000")
+							return fmt.Errorf("Expecting XSLT to transform network model to e1000")
 						}
 						return nil
 					}),

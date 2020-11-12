@@ -39,7 +39,7 @@ func TestTransformXMLEmptyXSLTNoOp(t *testing.T) {
 	assert.Equal(t, inXML, result)
 }
 
-func TestXSLTDiffSupressFunc(t *testing.T) {
+func TestXSLTDiffSuppressFunc(t *testing.T) {
 	const inXML string = `    <foo>
 
       <la two="two" one="one">foo this is a test</la>
@@ -51,5 +51,5 @@ func TestXSLTDiffSupressFunc(t *testing.T) {
 <foo><la two="two" one="one">foo this is a test</la><be>bebe  </be></foo>
 `
 
-	assert.True(t, xsltDiffSupressFunc("K", inXML, outXML, &schema.ResourceData{}))
+	assert.True(t, xsltDiffSuppressFunc("K", inXML, outXML, &schema.ResourceData{}))
 }

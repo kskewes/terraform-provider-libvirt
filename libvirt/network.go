@@ -6,13 +6,14 @@ import (
 	"net"
 	"strings"
 
+	libvirt "github.com/digitalocean/go-libvirt"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/libvirt/libvirt-go"
+	libvirtc "github.com/libvirt/libvirt-go"
 	libvirtxml "github.com/libvirt/libvirt-go-xml"
 )
 
-func waitForNetworkActive(network libvirt.Network) resource.StateRefreshFunc {
+func waitForNetworkActive(network libvirtc.Network) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
 		active, err := network.IsActive()
 		if err != nil {
@@ -26,14 +27,18 @@ func waitForNetworkActive(network libvirt.Network) resource.StateRefreshFunc {
 }
 
 // waitForNetworkDestroyed waits for a network to destroyed
-func waitForNetworkDestroyed(virConn *libvirt.Connect, uuid string) resource.StateRefreshFunc {
+func waitForNetworkDestroyed(virConn *libvirt.Libvirt, uuidStr string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
-		log.Printf("Waiting for network %s to be destroyed", uuid)
-		network, err := virConn.LookupNetworkByUUIDString(uuid)
-		if err.(libvirt.Error).Code == libvirt.ERR_NO_NETWORK {
+		log.Printf("Waiting for network %s to be destroyed", uuidStr)
+		var uuid libvirt.UUID
+		copy(uuid[:], uuidStr)
+		_, err := virConn.NetworkLookupByUUID(uuid)
+		// FIXME
+		// In the past, with the C bindings, we were able to peek in the error
+		// to make sure the error was errNoNetwork.
+		if err != nil {
 			return virConn, "NOT-EXISTS", nil
 		}
-		defer network.Free()
 		return virConn, "ACTIVE", err
 	}
 }

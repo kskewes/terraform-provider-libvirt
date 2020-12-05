@@ -8,14 +8,17 @@ import (
 	"sort"
 	"strconv"
 
+	libvirt "github.com/digitalocean/go-libvirt"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/libvirt/libvirt-go"
+	libvirtc "github.com/libvirt/libvirt-go"
 	"github.com/libvirt/libvirt-go-xml"
 )
 
 // updateDNSHosts detects changes in the DNS hosts entries
 // updating the network definition accordingly
-func updateDNSHosts(d *schema.ResourceData, network *libvirt.Network) error {
+func updateDNSHosts(d *schema.ResourceData, meta interface{}, network libvirt.Network) error {
+	virConn := meta.(*Client).libvirt
+
 	hostsKey := dnsPrefix + ".hosts"
 	if d.HasChange(hostsKey) {
 		oldInterface, newInterface := d.GetChange(hostsKey)
@@ -48,7 +51,7 @@ func updateDNSHosts(d *schema.ResourceData, network *libvirt.Network) error {
 				return fmt.Errorf("serialize update: %s", err)
 			}
 
-			err = network.Update(libvirt.NETWORK_UPDATE_COMMAND_DELETE, libvirt.NETWORK_SECTION_DNS_HOST, -1, data, libvirt.NETWORK_UPDATE_AFFECT_LIVE|libvirt.NETWORK_UPDATE_AFFECT_CONFIG)
+			err = virConn.NetworkUpdate(network, uint32(libvirt.NetworkUpdateCommandDelete), uint32(libvirt.NetworkSectionDNSHost), -1, data, libvirt.NetworkUpdateAffectLive|libvirt.NetworkUpdateAffectConfig)
 			if err != nil {
 				return fmt.Errorf("delete %s: %s", oldEntry.IP, err)
 			}
@@ -72,7 +75,7 @@ func updateDNSHosts(d *schema.ResourceData, network *libvirt.Network) error {
 				return fmt.Errorf("serialize update: %s", err)
 			}
 
-			err = network.Update(libvirt.NETWORK_UPDATE_COMMAND_ADD_LAST, libvirt.NETWORK_SECTION_DNS_HOST, -1, data, libvirt.NETWORK_UPDATE_AFFECT_LIVE|libvirt.NETWORK_UPDATE_AFFECT_CONFIG)
+			err = virConn.NetworkUpdate(network, uint32(libvirt.NetworkUpdateCommandAddLast), uint32(libvirt.NetworkSectionDNSHost), -1, data, libvirt.NetworkUpdateAffectLive|libvirt.NetworkUpdateAffectConfig)
 			if err != nil {
 				return fmt.Errorf("add %v: %s", newEntry, err)
 			}
